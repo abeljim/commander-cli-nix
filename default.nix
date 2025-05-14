@@ -1,16 +1,23 @@
 {pkgs ? import <nixpkgs> {}}:
-pkgs.stdenv.mkDerivation {
-  pname = "slc-cli";
-  version = "5.10.2.0";
+pkgs.stdenv.mkDerivation rec {
+  pname = "commander-cli";
+  version = "1.18.1";
 
   src = pkgs.fetchurl {
-    url = "https://github.com/abeljim/slc-cli-nix/releases/download/v5.10.2.0/slc_cli_linux_5.10.2.0.zip";
-    sha256 = "12w0c5l0nkm90v3j0xir04wrm32yyf5j33b89n9z84qawqbbacdm";
+    url = "https://github.com/abeljim/commander-cli-nix/releases/download/v1.18.1/commander_cli_linux_1.18.1.zip";
+    sha256 = "1vsyv0f2yv2y5d49khjjfgaa04jm7yc4mw5s9s5rhfaj3cdazgmr";
   };
 
   buildInputs = [
     pkgs.libarchive
-    pkgs.jdk17
+    pkgs.krb5
+    pkgs.stdenv.cc.cc.lib
+    pkgs.glib
+    pkgs.dbus
+  ];
+
+  nativeBuildInputs = [
+    pkgs.autoPatchelfHook
   ];
 
   unpackPhase = ''
@@ -19,24 +26,21 @@ pkgs.stdenv.mkDerivation {
 
   installPhase = ''
     mkdir -p $out/bin
-    mv slc_cli $out/
-    chmod +x $out/slc_cli/slc
-
-    # Create a wrapper script for the `slc` command
-    cat > $out/bin/slc <<EOF
-    #!/bin/bash
-    export JAVA_HOME=${pkgs.jdk17}
-    export PATH=\$JAVA_HOME/bin:\$PATH
-    exec $out/slc_cli/slc "\$@"
-    EOF
-    chmod +x $out/bin/slc
-
-    ln -s $out/slc_cli/slc.jar $out/bin/slc.jar
+    mv commander-cli $out/
+    chmod +x $out/commander-cli/commander-cli
+    ln -s $out/commander-cli/commander-cli $out/bin/commander-cli
   '';
 
+  runtimeDependencies = [
+    pkgs.krb5
+    pkgs.stdenv.cc.cc.lib
+    pkgs.glib
+    pkgs.dbus
+  ];
+
   meta = with pkgs.lib; {
-    description = "Silicon Labs C CLI";
-    homepage = "https://docs.silabs.com/simplicity-studio-5-users-guide/latest/ss-5-users-guide-tools-slc-cli/";
+    description = "Silicon Labs Commander CLI";
+    homepage = "https://www.silabs.com/developer-tools/simplicity-studio/simplicity-commander";
     license = licenses.unfree;
     platforms = platforms.linux;
     maintainers = with maintainers; [abeljim];

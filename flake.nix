@@ -19,12 +19,19 @@
 
       src = pkgs.fetchurl {
         url = "https://github.com/abeljim/commander-cli-nix/releases/download/v1.18.1/commander_cli_linux_1.18.1.zip";
-        sha256 = "12w0c5l0nkm90v3j0xir04wrm32yyf5j33b89n9z84qawqbbacdm";
+        sha256 = "1vsyv0f2yv2y5d49khjjfgaa04jm7yc4mw5s9s5rhfaj3cdazgmr";
       };
 
       buildInputs = [
         pkgs.libarchive
-        # pkgs.jdk17
+        pkgs.krb5
+        pkgs.stdenv.cc.cc.lib
+        pkgs.glib
+        pkgs.dbus
+      ];
+
+      nativeBuildInputs = [
+        pkgs.autoPatchelfHook
       ];
 
       unpackPhase = ''
@@ -38,6 +45,13 @@
 
         ln -s $out/commander-cli/commander-cli $out/bin/commander-cli
       '';
+
+      runtimeDependencies = [
+        pkgs.krb5
+        pkgs.stdenv.cc.cc.lib
+        pkgs.glib
+        pkgs.dbus
+      ];
 
       meta = with pkgs.lib; {
         description = "Silicon Labs Commander CLI";
