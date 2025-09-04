@@ -28,6 +28,7 @@
         pkgs.stdenv.cc.cc.lib
         pkgs.glib
         pkgs.dbus
+        pkgs.eudev
       ];
 
       nativeBuildInputs = [
@@ -46,11 +47,16 @@
         ln -s $out/commander-cli/commander-cli $out/bin/commander-cli
       '';
 
+      appendRunpaths = [
+        "${pkgs.eudev}/lib"
+      ];
+
       runtimeDependencies = [
         pkgs.krb5
         pkgs.stdenv.cc.cc.lib
         pkgs.glib
         pkgs.dbus
+        pkgs.eudev
       ];
 
       meta = with pkgs.lib; {
